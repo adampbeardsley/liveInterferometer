@@ -25,9 +25,9 @@ def fast_conv(image, psf):
     return imageDirty[psf.shape[0]/2:image.shape[0]+psf.shape[0]/2,psf.shape[1]/2:image.shape[1]+psf.shape[1]/2]
 
 def main(stdscr, opts, args):
-    
+
     CAMERA_DEVICE_INDEX=opts.camera   #check /dev/, ID is attached to video device (0 is in the internal)
-    
+
     cv2.namedWindow("Antenna Layout", cv2.CV_WINDOW_AUTOSIZE)
     cv2.namedWindow("Target Image", cv2.CV_WINDOW_AUTOSIZE)
     cv2.namedWindow("Point Spread", cv2.CV_WINDOW_AUTOSIZE)
@@ -35,7 +35,7 @@ def main(stdscr, opts, args):
     cv2.namedWindow("Observed Image", cv2.CV_WINDOW_AUTOSIZE)
 
     cam0 = cv2.VideoCapture(CAMERA_DEVICE_INDEX)
-    
+
     if opts.input is None:
         target_image = cv2.imread('/home/griffin/Downloads/interactiveInterferometer/astro_test_image.jpg')
     else:
@@ -43,11 +43,11 @@ def main(stdscr, opts, args):
     target_img_grey = cv2.cvtColor(target_image,cv2.COLOR_BGR2GRAY)
     target_img_grey[target_img_grey < 100] = 0
     cv2.imshow("Target Image", target_img_grey)
-    
+
     RESCALE_FACTOR=opts.res #decrease to change the effective resolution
     ysize=480
     xsize=640
-    
+
     #make a 2D Gaussian to modulate the PSF with
     def gauss2d(x0,y0,amp,stdx,stdy):
         return lambda x,y: amp*np.exp(-1.*( (((x-x0)**2.)/(2*stdx**2.)) + (((y-y0)**2.)/(2*stdy**2.)) ))
@@ -73,10 +73,10 @@ def main(stdscr, opts, args):
             #t1 = time.time()
             #elapsed = t1-t0
             #stdscr.addstr('Capture %d took %.3f seconds\n'%(i,elapsed))
-          
-    
+
+        layout_img = cv2.resize(layout_img,(xsize, ysize), interpolation = cv2.INTER_CUBIC)
         layout_img_grey = cv2.cvtColor(layout_img, cv2.COLOR_BGR2GRAY)
-    
+
         # set the station locations to zero for each loop, unless we have persistence, in which
         # case leave the ones from the previous iteration in
         if not persistence:
@@ -95,7 +95,7 @@ def main(stdscr, opts, args):
         circles = cv2.HoughCircles(layout_img_grey, cv2.cv.CV_HOUGH_GRADIENT,2,50,None,50,30,15,30)
         if circles is not None:
             for cn,circle in enumerate(circles[0]):
-                x,y = circle[1],circle[0]
+                x,y = int(circle[1]),int(circle[0])
                 try:
                     station_overlay[x-5:x+5,y-5:y+5] = 1
                 except:
@@ -107,7 +107,7 @@ def main(stdscr, opts, args):
 
         if not persistence:
             psf = np.zeros([ysize, xsize])
-        
+
         psf += np.fft.fftshift(np.abs(np.fft.fft2(station_locs,s=[ysize,xsize]))**2)
 
         if psf.max() != 0:
@@ -122,17 +122,17 @@ def main(stdscr, opts, args):
                 psf_norm = (psf*gaussGrid/psf.max()) #apply a Gaussian taper to the PSF
         else:
             psf_norm = psf
-    
+
         #target_arr = target_img_grey[:,:]
         dirty_arr = fast_conv(target_img_grey, psf_norm)
-        
+
         if dirty_arr.max() != 0:
             dirty_arr /= dirty_arr.max()
 
         cv2.imshow("Antenna Layout",layout_img_grey)
         cv2.imshow("Point Spread",psf_norm)
         cv2.imshow("Observed Image",dirty_arr)
-    
+
         # Key command handling
         k = stdscr.getch()
         if k != -1:
@@ -161,7 +161,7 @@ def main(stdscr, opts, args):
                else:
                    stdscr.addstr('Turning window on\n')
                window = not window
-               
+
 
         cv2.waitKey(1)
 
