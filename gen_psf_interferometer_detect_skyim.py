@@ -36,10 +36,10 @@ def main(stdscr, opts, args):
     # check /dev/, ID is attached to video device (0 is in the internal)
     CAMERA_DEVICE_INDEX = opts.camera
 
-    cv2.namedWindow("Antenna Layout", cv2.CV_WINDOW_AUTOSIZE)
-    cv2.namedWindow("Target Image", cv2.CV_WINDOW_AUTOSIZE)
-    cv2.namedWindow("Point Spread", cv2.CV_WINDOW_AUTOSIZE)
-    cv2.namedWindow("Observed Image", cv2.CV_WINDOW_AUTOSIZE)
+    cv2.namedWindow("Antenna Layout", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("Target Image", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("Point Spread", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("Observed Image", cv2.WINDOW_AUTOSIZE)
 
     cam0 = cv2.VideoCapture(CAMERA_DEVICE_INDEX)
 
@@ -88,7 +88,7 @@ def main(stdscr, opts, args):
             station_overlay = np.zeros_like(layout_img_grey)
         station_locs = np.zeros([ysize / RESCALE_FACTOR, xsize / RESCALE_FACTOR])
 
-        method = cv2.cv.CV_HOUGH_GRADIENT  # only method that exists
+        method = cv2.HOUGH_GRADIENT  # only method that exists
         dp = 2  # Inverse ratio of the accumulator resolution to the image resolution. this basically affects the min/max radius
         minDist = 50  # Minimum distance between the centers of the detected circles. If the parameter is too small, multiple neighbor circles may be falsely detected in addition to a true one. If it is too large, some circles may be missed.
         circles = None  # set to None
