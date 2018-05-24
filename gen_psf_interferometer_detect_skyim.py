@@ -27,8 +27,8 @@ def fast_conv(image, psf):
     n = int(2**np.ceil(np.log2(max_size[0])))
     m = int(2**np.ceil(np.log2(max_size[1])))
     imageDirty = np.fft.irfft2(np.fft.rfft2(image, (n, m)) * np.fft.rfft2(psf, (n, m)))
-    return imageDirty[psf.shape[0] / 2:image.shape[0] + psf.shape[0] / 2,
-                      psf.shape[1] / 2:image.shape[1] + psf.shape[1] / 2]
+    return imageDirty[psf.shape[0] // 2:image.shape[0] + psf.shape[0] // 2,
+                      psf.shape[1] // 2:image.shape[1] + psf.shape[1] // 2]
 
 
 def main(stdscr, opts, args):
@@ -86,7 +86,7 @@ def main(stdscr, opts, args):
         # case leave the ones from the previous iteration in
         if not persistence:
             station_overlay = np.zeros_like(layout_img_grey)
-        station_locs = np.zeros([ysize / RESCALE_FACTOR, xsize / RESCALE_FACTOR])
+        station_locs = np.zeros([ysize // RESCALE_FACTOR, xsize // RESCALE_FACTOR])
 
         method = cv2.HOUGH_GRADIENT  # only method that exists
         dp = 2  # Inverse ratio of the accumulator resolution to the image resolution. this basically affects the min/max radius
@@ -105,7 +105,7 @@ def main(stdscr, opts, args):
                     station_overlay[x - 5:x + 5, y - 5:y + 5] = 1
                 except:
                     pass
-                station_locs[x / RESCALE_FACTOR, y / RESCALE_FACTOR] = 1
+                station_locs[x // RESCALE_FACTOR, y // RESCALE_FACTOR] = 1
 
         # draw white squares at the station locations
         layout_img_grey[station_overlay == 1] = 255
