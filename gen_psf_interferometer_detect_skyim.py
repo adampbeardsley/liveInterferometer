@@ -54,8 +54,8 @@ def main(stdscr, opts, args):
     cv2.imshow("Target Image", target_img_grey)
 
     RESCALE_FACTOR = opts.res
-    xsize = opts.xsize
-    ysize = opts.ysize
+    ysize = opts.xsize
+    xsize = opts.ysize
 
     # make a 2D Gaussian to modulate the PSF with
     def gauss2d(x0, y0, amp, stdx, stdy):
@@ -79,9 +79,9 @@ def main(stdscr, opts, args):
         for i in range(4):
             rv, layout_img = cam0.read()
 
-        layout_img = cv2.resize(layout_img, (xsize, ysize), interpolation=cv2.INTER_CUBIC)
-        layout_img_grey = cv2.cvtColor(layout_img, cv2.COLOR_BGR2GRAY)
-
+        layout_img = cv2.resize(layout_img, (ysize, xsize), interpolation=cv2.INTER_CUBIC)
+        layout_img_grey = cv2.cvtColor(layout_img, cv2.COLOR_BGR2GRAY).T
+        layout_img_grey = np.fliplr(layout_img_grey)
         # set the station locations to zero for each loop, unless we have persistence, in which
         # case leave the ones from the previous iteration in
         if not persistence:
